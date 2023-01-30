@@ -1,0 +1,23 @@
+rules:
+  - id: atom-exhaustion
+    patterns:
+      - pattern-either:
+          - pattern: |
+              String.to_atom(...)
+          - pattern: |
+              List.to_atom(...)
+          - pattern: |
+              Module.concat(...)
+    message: >-
+      Each unique atom value in use in the virtual machine takes up an entry in the global atom table. New atom values are appended to this table as needed, but entries are never removed. The size of the table is determined at startup, based on the +t emulator flag, with a default of 1,048,576 entries. If an attempt is made to add a new value while the table is at capacity, the virtual machine crashes.
+      
+      Because of the above, care should be taken to not create an unbounded number of atoms. In particular, creating atoms from untrusted input can lead to denial-of-service (DoS) vulnerabilities.
+    metadata:
+      references:
+        - https://erlef.github.io/security-wg/secure_coding_and_deployment_hardening/atom_exhaustion
+      category: security
+      technology:
+        - elixir
+    languages:
+      - elixir
+    severity: ERROR
